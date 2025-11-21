@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Skill Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>AI Skill Coach</h1>
+        <p>Objective, real-time coaching for any visually verifiable skill.</p>
+      </header>
+
+      <main>
+        <section class="card">
+          <h2>Input</h2>
+          <form id="coach-form">
+            <label>
+              Skill
+              <input type="text" id="skill" placeholder="e.g., Mock Interview" required />
+            </label>
+            <label>
+              Transcript Preview
+              <textarea id="transcript" placeholder="Recorded speech will appear here" rows="5"></textarea>
+            </label>
+            <div class="actions">
+              <button type="button" id="fetchCriteria">Get Ideal Criteria</button>
+              <button type="submit" id="startCoach">Start Coaching</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card">
+          <h2>Microphone</h2>
+          <div class="camera">
+            <div class="actions">
+              <button id="startMic">Start Mic</button>
+              <button id="startRec">Record</button>
+              <button id="stopRec">Stop & Upload</button>
+            </div>
+            <div id="recStatus" class="status-bar"><span class="status-dot"></span><span class="status-text">Idle</span></div>
+            <small class="hint">After upload, the audio URL is used behind the scenes. Transcript is captured locally.</small>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="card">
+            <h2>Ideal Technique</h2>
+            <div class="status-bar" id="criteriaSource"><span class="status-dot"></span><span class="status-text">Idle</span></div>
+            <p id="criteriaSummary" class="meta"></p>
+            <ul id="criteriaList" class="list"></ul>
+          </div>
+          <div class="card">
+            <h2>Analysis</h2>
+            <div id="analysisStatus" class="status-bar"><span class="status-dot"></span><span class="status-text">Idle</span></div>
+            <div id="scoreTotal" class="total"></div>
+            <ul id="scores" class="list"></ul>
+            <div class="feedback">
+              <p id="feedbackText"></p>
+              <div class="actions">
+                <button id="speakBtn">Speak Feedback</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <small>Built for Hackathon • Privacy: no videos are stored</small>
+      </footer>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+  </html>

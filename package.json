@@ -1,0 +1,22 @@
+{
+  "name": "ai-skill-coach",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Generalized AI Skill Coach backend + static frontend",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "node-fetch": "^3.3.2",
+    "@anthropic-ai/sdk": "^0.70.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
