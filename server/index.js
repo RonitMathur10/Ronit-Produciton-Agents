@@ -10,6 +10,8 @@ require('dotenv').config();
 const { getRedis } = require('./services/redis');
 const { fetchIdealTechnique } = require('./services/lightpanda');
 const { analyzePerformanceWithClaude } = require('./services/anthropic');
+const { transcribeAudio } = require('./services/stt');
+const { synthesizeWarmVoice } = require('./services/tts');
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -74,7 +76,16 @@ app.post('/api/coach', async (req, res) => {
       await redis.set(key, JSON.stringify(result), 'EX', 60 * 60 * 24);
     }
 
-    const analysis = await analyzePerformanceWithClaude({ skill: s, criteria, transcript: transcript || '' });
+    let tr = (transcript || '').trim();
+    if (!tr && audioUrl) {
+      try {
+        const p = resolveUploadPath(audioUrl);
+        tr = await transcribeAudio(p);
+      } catch (e) {
+        console.error('transcription error', e.message);
+      }
+    }
+    const analysis = await analyzePerformanceWithClaude({ skill: s, criteria, transcript: tr });
 
     return res.json({ skill: s, criteria, analysis, audioUrl });
   } catch (err) {
@@ -83,7 +94,33 @@ app.post('/api/coach', async (req, res) => {
   }
 });
 
+app.post('/api/tts', async (req, res) => {
+  try {
+    const { text, voiceId } = req.body || {};
+    if (!text || typeof text !== 'string') return res.status(400).json({ error: 'Missing text' });
+    const url = await synthesizeWarmVoice(text, { voiceId });
+    return res.json({ url });
+  } catch (err) {
+    console.error('tts error', err.message);
+    return res.status(500).json({ error: 'TTS failed' });
+  }
+});
+
 function safeJson(text) { try { return JSON.parse(text); } catch { return null; } }
+
+function resolveUploadPath(url) {
+  try {
+    const u = new URL(url, `http://localhost:${process.env.PORT || 3000}`);
+    const base = path.join(__dirname, 'uploads');
+    const name = path.basename(u.pathname);
+    return path.join(base, name);
+  } catch {
+    const base = path.join(__dirname, 'uploads');
+    const idx = String(url || '').lastIndexOf('/');
+    const name = idx >= 0 ? String(url).slice(idx + 1) : String(url);
+    return path.join(base, name);
+  }
+}
 
 // Upload recorded video and return a URL to use in analysis
 app.post('/api/upload', upload.any(), async (req, res) => {
